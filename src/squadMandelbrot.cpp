@@ -41,38 +41,39 @@ int main(void) {
 
             float y0 = (((float)y - 300.f) * dy + yC) *scale;
 
-            for (int x = 0; x < sizeX; x += 4) {
+            for (int x = 0; x < sizeX; x += 8) {
 
                 float x0 = (((float)x - 400.f) * dx + xC) *scale;
+                float xStep = dx*scale;
 
-                float x0Arr [4] = { x0, x0 + dx, x0 + 2*dx, x0 + 3*dx};
-                float y0Arr [4] = { y0, y0,      y0,        y0       };
+                float x0Arr [8] = { x0, x0 + xStep, x0 + 2*xStep, x0 + 3*xStep, x0 + 4*xStep, x0 + 5*xStep, x0 + 6*xStep, x0 + 7*xStep};
+                float y0Arr [8] = { y0, y0,      y0,        y0,        y0,        y0,        y0,        y0       };
 
-                float xArr [4] = {};  for (int i = 0; i < 4; i++) xArr[i] = x0Arr[i];
-                float yArr [4] = {};  for (int i = 0; i < 4; i++) yArr[i] = y0Arr[i];
+                float xArr [8] = {};  for (int i = 0; i < 8; i++) xArr[i] = x0Arr[i];
+                float yArr [8] = {};  for (int i = 0; i < 8; i++) yArr[i] = y0Arr[i];
 
-                int N[4] = {};
+                int N[8] = {};
                 for (int n = 0; n < nMax; n++) {
-                    float x2 [4] = {};  for (int i = 0; i < 4; i++) x2[i] = xArr[i] * xArr[i];
-                    float y2 [4] = {};  for (int i = 0; i < 4; i++) y2[i] = yArr[i] * yArr[i];
-                    float xy [4] = {};  for (int i = 0; i < 4; i++) xy[i] = xArr[i] * yArr[i];
+                    float x2 [8] = {};  for (int i = 0; i < 8; i++) x2[i] = xArr[i] * xArr[i];
+                    float y2 [8] = {};  for (int i = 0; i < 8; i++) y2[i] = yArr[i] * yArr[i];
+                    float xy [8] = {};  for (int i = 0; i < 8; i++) xy[i] = xArr[i] * yArr[i];
 
-                    float r2 [4] = {};  for (int i = 0; i < 4; i++) r2[i] = x2[i] + y2[i];
+                    float r2 [8] = {};  for (int i = 0; i < 8; i++) r2[i] = x2[i] + y2[i];
 
-                    int cmp[4] = {};
-                    for (int i = 0; i < 4; i++) if (r2[i] <= r2Max) cmp[i] = 1;
+                    int cmp[8] = {};
+                    for (int i = 0; i < 8; i++) if (r2[i] <= r2Max) cmp[i] = 1;
 
                     int mask = 0;
-                    for (int i = 0; i < 4; i++) mask |= cmp[i] << i;
+                    for (int i = 0; i < 8; i++) mask |= cmp[i] << i;
                     if(!mask) break;
 
-                    for (int i = 0; i < 4; i++) xArr[i] = x2[i] - y2[i] + x0Arr[i];
-                    for (int i = 0; i < 4; i++) yArr[i] = xy[i] + xy[i] + y0Arr[i];
+                    for (int i = 0; i < 8; i++) xArr[i] = x2[i] - y2[i] + x0Arr[i];
+                    for (int i = 0; i < 8; i++) yArr[i] = xy[i] + xy[i] + y0Arr[i];
 
-                    for (int i = 0; i < 4; i++) N[i] += cmp[i];
+                    for (int i = 0; i < 8; i++) N[i] += cmp[i];
                 }
 
-                for (int i = 0; i < 4; i ++) {
+                for (int i = 0; i < 8; i ++) {
                     RGBQUAD color = {(BYTE)(N[i] << 4), (BYTE)(N[i] << 1), (BYTE)(N[i] << 2), 0};
 
                     int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + (x + i);
@@ -84,6 +85,7 @@ int main(void) {
 
         DWORD currentTime = GetTickCount();
         float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
+        if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
         lastTime = currentTime;
 
         char fpsBuf[20];

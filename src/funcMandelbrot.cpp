@@ -3,11 +3,10 @@
 
 int main(void) {
 
+    const int sizeX = 800, sizeY = 600;
+
     DWORD lastTime = GetTickCount();
     float fps = 0;
-
-
-    const int sizeX = 800, sizeY = 600;
 
     const float dx = 1.0f / sizeX;
     const float dy = 1.0f / sizeY;
@@ -42,37 +41,49 @@ int main(void) {
 
             float y0 = (((float)y - 300.f) * dy + yC) *scale;
 
-            for (int x = 0; x < sizeX; x++) {
+            for (int x = 0; x < sizeX; x += 4) {
 
-               float x0 = (((float)x - 400.f) * dx + xC) *scale;
+                float x0 = (((float)x - 400.f) * dx + xC) *scale;
 
-                float curX = x0;
-                float curY = y0;
+                float x0Arr [4] = { x0, x0 + dx, x0 + 2*dx, x0 + 3*dx};
+                float y0Arr [4] = { y0, y0,      y0,        y0       };
 
-                int n = 0;
-                for ( ; n < nMax; n++) {
-                    float x2   = curX * curX;
-                    float y2   = curY * curY;
-                    float xy   = curX * curY;
+                float xArr [4] = {};  for (int i = 0; i < 4; i++) xArr[i] = x0Arr[i];
+                float yArr [4] = {};  for (int i = 0; i < 4; i++) yArr[i] = y0Arr[i];
 
-                    float r2 = x2 + y2;
-                    if (r2 >= r2Max) break;
+                int N[4] = {};
+                for (int n = 0; n < nMax; n++) {
+                    float x2 [4] = {};  for (int i = 0; i < 4; i++) x2[i] = xArr[i] * xArr[i];
+                    float y2 [4] = {};  for (int i = 0; i < 4; i++) y2[i] = yArr[i] * yArr[i];
+                    float xy [4] = {};  for (int i = 0; i < 4; i++) xy[i] = xArr[i] * yArr[i];
 
+                    float r2 [4] = {};  for (int i = 0; i < 4; i++) r2[i] = x2[i] + y2[i];
 
-                    curX = x2 - y2 + x0;
-                    curY = xy + xy + y0;
+                    int cmp[4] = {};
+                    for (int i = 0; i < 4; i++) if (r2[i] <= r2Max) cmp[i] = 1;
+
+                    int mask = 0;
+                    for (int i = 0; i < 4; i++) mask |= cmp[i] << i;
+                    if(!mask) break;
+
+                    for (int i = 0; i < 4; i++) xArr[i] = x2[i] - y2[i] + x0Arr[i];
+                    for (int i = 0; i < 4; i++) yArr[i] = xy[i] + xy[i] + y0Arr[i];
+
+                    for (int i = 0; i < 4; i++) N[i] += cmp[i];
                 }
 
-                RGBQUAD color = {(BYTE)(n << 4), (BYTE)(n << 1), (BYTE)(n << 2), 0};
+                for (int i = 0; i < 4; i ++) {
+                    RGBQUAD color = {(BYTE)(N[i] << 4), (BYTE)(N[i] << 1), (BYTE)(N[i] << 2), 0};
 
-                int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + x;
-                graphBuf[videoMemoRyOffset] = color;
+                    int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + (x + i);
+                    graphBuf[videoMemoRyOffset] = color;
+                }
+
             }
         }
 
         DWORD currentTime = GetTickCount();
         float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
-        if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
         lastTime = currentTime;
 
         char fpsBuf[20];
