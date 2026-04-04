@@ -1,0 +1,74 @@
+
+--------------------------------------------------
+TXLib предупреждает:
+
+Программа: C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe,
+
+ВНЕЗАПНО: Нарушение доступа к памяти.
+
+#1: Исключение EXCEPTION_ACCESS_VIOLATION (0xC0000005) при выполнении кода по адресу 0x00007FF68A0602A9 в функции main(). Попытка записать данные по адресу 0x000001B0B2185000 в модуле C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe. Спасибо _txVectoredExceptionHandler(), что сообщил. Люблю его <3
+
+#1: TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400], Instance: 0x00007FF68A088830 (64-bit), Flags: CMdRe0, Thread: 0x767C (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x00007FF68A0602A9 in C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	C:\Users\Admin\Downloads\CodeBlocks\TX\TXLib.h
+Compiled:	Apr  3 2026 17:27:43, GNU g++ 13.2.0, std=201703L, MinGW-W64 Runtime 11.0.1 (alpha - rev. 0) 0000-00-00, 64-bit, Debug
+Started:	Apr  3 2026 17:28:14
+
+Run file:	C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe
+Directory:	C:\Users\Admin\Desktop\prodva\Mandelbrot
+
+--------------------------------------------------
+
+--------------------------------------------------
+TXLib соболезнует...
+
+Программа: C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe,
+
+ВНЕЗАПНО: signal (11, 0x00): SIGSEGV: Доступ по неверному указателю. Ставьте ассерты! 
+
+Нарушение доступа к памяти.
+
+#1: Исключение EXCEPTION_ACCESS_VIOLATION (0xC0000005) при выполнении кода по адресу 0x00007FF68A0602A9 в функции main(). Попытка записать данные по адресу 0x000001B0B2185000 в модуле C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe. Спасибо _txVectoredExceptionHandler(), что сообщил. Люблю его <3
+
+С помощью функции signal() вы можете сами обработать эту ошибку.
+
+#2: TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400], Instance: 0x00007FF68A088830 (64-bit), Flags: CMdRe0, Thread: 0x767C (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x00007FF68A0602A9 in C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	C:\Users\Admin\Downloads\CodeBlocks\TX\TXLib.h
+Compiled:	Apr  3 2026 17:27:43, GNU g++ 13.2.0, std=201703L, MinGW-W64 Runtime 11.0.1 (alpha - rev. 0) 0000-00-00, 64-bit, Debug
+Started:	Apr  3 2026 17:28:14
+
+Run file:	C:\Users\Admin\Desktop\prodva\Mandelbrot\build\simpleMandelbrot.exe
+Directory:	C:\Users\Admin\Desktop\prodva\Mandelbrot
+
+--------------------------------------------------
