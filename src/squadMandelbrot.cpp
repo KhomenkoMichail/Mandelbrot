@@ -46,19 +46,19 @@ int main(void) {
                 float x0 = (((float)x - 400.f) * dx + xC) *scale;
                 float xStep = dx*scale;
 
-                float x0Arr [8] = { x0, x0 + xStep, x0 + 2*xStep, x0 + 3*xStep, x0 + 4*xStep, x0 + 5*xStep, x0 + 6*xStep, x0 + 7*xStep};
-                float y0Arr [8] = { y0, y0,      y0,        y0,        y0,        y0,        y0,        y0       };
+                float x0Arr[8] = { x0, x0 + xStep, x0 + 2*xStep, x0 + 3*xStep, x0 + 4*xStep, x0 + 5*xStep, x0 + 6*xStep, x0 + 7*xStep};
+                float y0Arr[8] = { y0, y0,      y0,        y0,        y0,        y0,        y0,        y0       };
 
-                float xArr [8] = {};  for (int i = 0; i < 8; i++) xArr[i] = x0Arr[i];
-                float yArr [8] = {};  for (int i = 0; i < 8; i++) yArr[i] = y0Arr[i];
+                float xArr[8] = {};  for (int i = 0; i < 8; i++) xArr[i] = x0Arr[i];
+                float yArr[8] = {};  for (int i = 0; i < 8; i++) yArr[i] = y0Arr[i];
 
                 int N[8] = {};
                 for (int n = 0; n < nMax; n++) {
-                    float x2 [8] = {};  for (int i = 0; i < 8; i++) x2[i] = xArr[i] * xArr[i];
-                    float y2 [8] = {};  for (int i = 0; i < 8; i++) y2[i] = yArr[i] * yArr[i];
-                    float xy [8] = {};  for (int i = 0; i < 8; i++) xy[i] = xArr[i] * yArr[i];
+                    float x2[8] = {};  for (int i = 0; i < 8; i++) x2[i] = xArr[i] * xArr[i];
+                    float y2[8] = {};  for (int i = 0; i < 8; i++) y2[i] = yArr[i] * yArr[i];
+                    float xy[8] = {};  for (int i = 0; i < 8; i++) xy[i] = xArr[i] * yArr[i];
 
-                    float r2 [8] = {};  for (int i = 0; i < 8; i++) r2[i] = x2[i] + y2[i];
+                    float r2[8] = {};  for (int i = 0; i < 8; i++) r2[i] = x2[i] + y2[i];
 
                     int cmp[8] = {};
                     for (int i = 0; i < 8; i++) if (r2[i] <= r2Max) cmp[i] = 1;
@@ -73,13 +73,14 @@ int main(void) {
                     for (int i = 0; i < 8; i++) N[i] += cmp[i];
                 }
 
-                for (int i = 0; i < 8; i ++) {
-                    RGBQUAD color = {(BYTE)(N[i] << 4), (BYTE)(N[i] << 1), (BYTE)(N[i] << 2), 0};
+                BYTE b[8] = {}; for(int i = 0; i < 8; i++) b[i] = (BYTE)(N[i] << 4);
+                BYTE g[8] = {}; for(int i = 0; i < 8; i++) g[i] = (BYTE)(N[i] << 1);
+                BYTE r[8] = {}; for(int i = 0; i < 8; i++) r[i] = (BYTE)(N[i] << 2);
 
-                    int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + (x + i);
-                    graphBuf[videoMemoRyOffset] = color;
-                }
+                RGBQUAD color[8] = {}; for(int i = 0; i < 8; i++) color[i] = {b[i], g[i], r[i], 0};
 
+                int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + x;
+                for (int i = 0; i < 8; i++) graphBuf[videoMemoRyOffset + i] = color[i];
             }
         }
 
