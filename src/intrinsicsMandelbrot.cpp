@@ -39,24 +39,24 @@ int main(void) {
         if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
         if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
 
-        float xStep = dx*scale;
+        float xOneStep = dx*scale;
+        __m256 xOneStepArr     =  _mm256_set1_ps(xOneStep);
+        xOneStepArr            =  _mm256_mul_ps(arr01234567, xOneStepArr);
 
-        __m256 xStepArr     =   _mm256_set1_ps(xStep);
-        xStepArr            =   _mm256_mul_ps(arr01234567, xStepArr);
+        __m256 xEightStepsArr  =  _mm256_set1_ps(8.0f * xOneStep);
 
         for (int y = 0; y < sizeY; y++) {
 
             float y0 = (((float)y - 300.f) * dy + yC) *scale;
-            RGBQUAD* сurRow = graphBuf + (sizeY - 1 - y) * sizeX;
+            __m256 y0Arr       =_mm256_set1_ps(y0);
+
+            float x0Base       =  ((-400.0f) * dx + xC) * scale;
+            __m256 x0Arr       =  _mm256_set1_ps(x0Base);
+            x0Arr              =  _mm256_add_ps(x0Arr, xOneStepArr);
+
+            RGBQUAD* сurRow    =  graphBuf + (sizeY - 1 - y) * sizeX;
 
             for (int x = 0; x < sizeX; x += 8) {
-
-                float x0 = (((float)x - 400.f) * dx + xC) *scale;
-
-                __m256 x0Arr        =   _mm256_set1_ps(x0);
-                x0Arr               =   _mm256_add_ps(x0Arr, xStepArr);
-
-                __m256 y0Arr        =   _mm256_set1_ps(y0);
 
                 __m256 xArr         =   x0Arr;
                 __m256 yArr         =   y0Arr;
@@ -96,7 +96,9 @@ int main(void) {
 
                 __m256i color        =  _mm256_or_si256(_mm256_or_si256(b, g), r);
 
-                _mm256_stream_si256((__m256i*)(сurRow + x), color);
+                _mm256_storeu_si256((__m256i*)(сurRow + x), color);
+
+                x0Arr = _mm256_add_ps(x0Arr, xEightStepsArr);
             }
         }
 
