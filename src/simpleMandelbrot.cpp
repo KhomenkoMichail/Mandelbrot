@@ -65,8 +65,8 @@ int main(void) {
 
                 RGBQUAD color = {(BYTE)(n << 4), (BYTE)(n << 1), (BYTE)(n << 2), 0};
 
-                int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + x;
-                graphBuf[videoMemoRyOffset] = color;
+                int videoMemoryOffset = (sizeY - 1 - y) * sizeX + x;
+                graphBuf[videoMemoryOffset] = color;
             }
         }
 

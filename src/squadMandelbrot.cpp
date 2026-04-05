@@ -79,8 +79,8 @@ int main(void) {
 
                 RGBQUAD color[8] = {}; for(int i = 0; i < 8; i++) color[i] = {b[i], g[i], r[i], 0};
 
-                int videoMemoRyOffset = (sizeY - 1 - y) * sizeX + x;
-                for (int i = 0; i < 8; i++) graphBuf[videoMemoRyOffset + i] = color[i];
+                int videoMemoryOffset = (sizeY - 1 - y) * sizeX + x;
+                for (int i = 0; i < 8; i++) graphBuf[videoMemoryOffset + i] = color[i];
             }
         }
 
