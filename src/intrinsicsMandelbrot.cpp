@@ -39,6 +39,10 @@ int main(void) {
         if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
         if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
 
+        _mm_lfence();
+        unsigned __int64 start = __rdtsc();
+        _mm_lfence();
+
         float xOneStep = dx*scale;
         __m256 xOneStepArr     =  _mm256_set1_ps(xOneStep);
         xOneStepArr            =  _mm256_mul_ps(arr01234567, xOneStepArr);
@@ -101,6 +105,10 @@ int main(void) {
                 x0Arr = _mm256_add_ps(x0Arr, xEightStepsArr);
             }
         }
+
+        _mm_lfence();
+        unsigned __int64 end = __rdtsc();
+        _mm_lfence();
 
         DWORD currentTime = GetTickCount();
         float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
