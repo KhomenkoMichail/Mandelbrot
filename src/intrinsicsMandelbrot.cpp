@@ -1,8 +1,20 @@
+#define BENCHMARK_MODE
+
+#ifndef BENCHMARK_MODE
+    #define SIMPLE_MODE(code) code
+    #define BENCHMARK(code)
+#else
+    #define SIMPLE_MODE(code)
+    #define BENCHMARK(code) code
+#endif
+
 #include "TXLib.h"
 #include <math.h>
 #include <immintrin.h>
 
 int main(void) {
+
+    BENCHMARK(const int   NUM_OF_TESTS = 500;)
 
     const int sizeX = 800, sizeY = 600;
 
@@ -11,37 +23,40 @@ int main(void) {
 
     float xC = 0, yC = 0, scale = 3.0;
 
-    float fps = 0;
-    DWORD lastTime = GetTickCount();
-
     const int   nMax = 256;
 
     __m256 r2Max            =   _mm256_set1_ps(4.0f);
     __m256 arr01234567      =   _mm256_set_ps(7, 6, 5, 4, 3, 2, 1, 0);
     __m256 const2           =   _mm256_set1_ps(2.0f);
-    __m256i byteMask        =   _mm256_set1_epi32(0xFF);
 
-    txCreateWindow (sizeX, sizeY);
+    SIMPLE_MODE(__m256i byteMask        =   _mm256_set1_epi32(0xFF);)
+
+    #ifndef BENCHMARK_MODE
+        float fps = 0;
+        DWORD lastTime = GetTickCount();
+
+        txCreateWindow (sizeX, sizeY);
+        RGBQUAD* graphBuf = txVideoMemory();
+
+    #endif
+
     Win32::_fpreset();
 
-    RGBQUAD* graphBuf = txVideoMemory();
+    for (SIMPLE_MODE( ; ; ) BENCHMARK(int curTest = 0; curTest < NUM_OF_TESTS; curTest++)) {
 
-    for ( ; ; ) {
-        if (GetAsyncKeyState (VK_ESCAPE)) break;
+        #ifndef BENCHMARK_MODE
+            if (GetAsyncKeyState (VK_ESCAPE)) break;
 
-        txBegin();
+            txBegin();
 
-        if (txGetAsyncKeyState (VK_RIGHT))    xC    += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_LEFT))     xC    -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_DOWN))     yC    += dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_UP))       yC    -= dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_RIGHT))    xC    += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_LEFT))     xC    -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_DOWN))     yC    += dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_UP))       yC    -= dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
 
-        if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-
-        _mm_lfence();
-        unsigned __int64 start = __rdtsc();
-        _mm_lfence();
+            if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+        #endif
 
         float xOneStep = dx*scale;
         __m256 xOneStepArr     =  _mm256_set1_ps(xOneStep);
@@ -58,7 +73,7 @@ int main(void) {
             __m256 x0Arr       =  _mm256_set1_ps(x0Base);
             x0Arr              =  _mm256_add_ps(x0Arr, xOneStepArr);
 
-            RGBQUAD* сurRow    =  graphBuf + (sizeY - 1 - y) * sizeX;
+            SIMPLE_MODE(RGBQUAD* сurRow    =  graphBuf + (sizeY - 1 - y) * sizeX;)
 
             for (int x = 0; x < sizeX; x += 8) {
 
@@ -85,44 +100,44 @@ int main(void) {
 
                     __m256i cmp_i   =   _mm256_castps_si256 (cmp_f);
                     N                =  _mm256_sub_epi32(N, cmp_i);
+
+                    BENCHMARK(__asm__ volatile("" : : "x"(N) : "memory");)
                 }
+                #ifndef BENCHMARK_MODE
+                    __m256i b            =  _mm256_slli_epi32(N, 4);
+                    __m256i g            =  _mm256_slli_epi32(N, 1);
+                    __m256i r            =  _mm256_slli_epi32(N, 2);
 
-                __m256i b            =  _mm256_slli_epi32(N, 4);
-                __m256i g            =  _mm256_slli_epi32(N, 1);
-                __m256i r            =  _mm256_slli_epi32(N, 2);
+                    b                    =  _mm256_and_si256(b, byteMask);
+                    g                    =  _mm256_and_si256(g, byteMask);
+                    r                    =  _mm256_and_si256(r, byteMask);
 
-                b                    =  _mm256_and_si256(b, byteMask);
-                g                    =  _mm256_and_si256(g, byteMask);
-                r                    =  _mm256_and_si256(r, byteMask);
+                    g                    =  _mm256_slli_epi32(g, 8);
+                    r                    =  _mm256_slli_epi32(r, 16);
 
-                g                    =  _mm256_slli_epi32(g, 8);
-                r                    =  _mm256_slli_epi32(r, 16);
+                    __m256i color        =  _mm256_or_si256(_mm256_or_si256(b, g), r);
 
-                __m256i color        =  _mm256_or_si256(_mm256_or_si256(b, g), r);
-
-                _mm256_storeu_si256((__m256i*)(сurRow + x), color);
+                    _mm256_storeu_si256((__m256i*)(сurRow + x), color);
+                #endif
 
                 x0Arr = _mm256_add_ps(x0Arr, xEightStepsArr);
             }
         }
+        #ifndef BENCHMARK_MODE
+            DWORD currentTime = GetTickCount();
+            float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
+            if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
+            lastTime = currentTime;
 
-        _mm_lfence();
-        unsigned __int64 end = __rdtsc();
-        _mm_lfence();
+            char fpsBuf[20];
+            sprintf(fpsBuf, "FPS: %.1f", fps);
 
-        DWORD currentTime = GetTickCount();
-        float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
-        if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
-        lastTime = currentTime;
-
-        char fpsBuf[20];
-        sprintf(fpsBuf, "FPS: %.1f", fps);
-
-        txSetColor(TX_WHITE);
-        txSetFillColor(TX_BLACK);
-        txSelectFont("Consolas", 24);
-        txTextOut(10, 10, fpsBuf);
-        txEnd();
+            txSetColor(TX_WHITE);
+            txSetFillColor(TX_BLACK);
+            txSelectFont("Consolas", 24);
+            txTextOut(10, 10, fpsBuf);
+            txEnd();
+        #endif
     }
 
     return 0;

@@ -1,0 +1,74 @@
+
+--------------------------------------------------
+TXLib предупреждает:
+
+Программа: C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe,
+
+ВНЕЗАПНО: Переполнение при операции с плавающей точкой.
+
+#1: Исключение EXCEPTION_FLT_OVERFLOW (0xC0000091) при выполнении кода по адресу 0x00007FF7EA442F7D в функции main() в модуле C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe. Спасибо _txVectoredExceptionHandler(), что сообщил. Люблю его <3
+
+#1: TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400], Instance: 0x00007FF7EA4884C4 (64-bit), Flags: Cmdre0, Thread: 0x6214 (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x00007FF7EA442F7D in C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	C:\Users\Admin\Downloads\CodeBlocks\TX\TXLib.h
+Compiled:	Apr  7 2026 00:50:18, GNU g++ 13.2.0, std=201703L, MinGW-W64 Runtime 11.0.1 (alpha - rev. 0) 0000-00-00, 64-bit, Debug
+Started:	Apr  7 2026 00:58:03
+
+Run file:	C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe
+Directory:	C:\Users\Admin\Desktop\prodva\Mandelbrot
+
+--------------------------------------------------
+
+--------------------------------------------------
+TXLib соболезнует...
+
+Программа: C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe,
+
+ВНЕЗАПНО: signal (8, 0x00): SIGFPE: Грубая ошибка в вычислениях. 
+
+Переполнение при операции с плавающей точкой.
+
+#1: Исключение EXCEPTION_FLT_OVERFLOW (0xC0000091) при выполнении кода по адресу 0x00007FF7EA442F7D в функции main() в модуле C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe. Спасибо _txVectoredExceptionHandler(), что сообщил. Люблю его <3
+
+С помощью функции signal() вы можете сами обработать эту ошибку.
+
+#2: TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400], Instance: 0x00007FF7EA4884C4 (64-bit), Flags: Cmdre0, Thread: 0x6214 (Main). 
+
+--------------------------------------------------
+Стек вызовов:
+
+# 0 0x00007FF7EA442F7D in C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe: main()
+
+TXLib печалится: Нет информации об исходных файлах. Вы не забыли опцию -g при компиляции?
+
+--------------------------------------------------
+Developed with:
+
+The Dumb Artist Library (TX Library)
+TXLib [Ver: 00173a, Rev: 174, Date: 2025-08-17 06:00:49 +0400]
+Copyright (C) Ded (Ilya Dedinsky, http://txlib.ru) <mail@txlib.ru>
+See license on: http://txlib.ru
+
+TXLib file:	C:\Users\Admin\Downloads\CodeBlocks\TX\TXLib.h
+Compiled:	Apr  7 2026 00:50:18, GNU g++ 13.2.0, std=201703L, MinGW-W64 Runtime 11.0.1 (alpha - rev. 0) 0000-00-00, 64-bit, Debug
+Started:	Apr  7 2026 00:58:03
+
+Run file:	C:\Users\Admin\Desktop\prodva\Mandelbrot\build\funcMandelbrot.exe
+Directory:	C:\Users\Admin\Desktop\prodva\Mandelbrot
+
+--------------------------------------------------

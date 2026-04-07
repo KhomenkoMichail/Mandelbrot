@@ -1,4 +1,15 @@
+#define BENCHMARK_MODE
+
+#ifndef BENCHMARK_MODE
+    #define SIMPLE_MODE(code) code
+    #define BENCHMARK(code)
+#else
+    #define SIMPLE_MODE(code)
+    #define BENCHMARK(code) code
+#endif
+
 #include "TXLib.h"
+
 #include <math.h>
 
 #include "../include/funcMandelbrot.h"
@@ -33,41 +44,45 @@ int _mm256_movemask_epi8 (int cmp[8]) {
 
 int main(void) {
 
-    const int sizeX = 800, sizeY = 600;
+    BENCHMARK(const int   NUM_OF_TESTS = 500;)
 
-    DWORD lastTime = GetTickCount();
-    float fps = 0;
+    const int sizeX = 800, sizeY = 600;
 
     const float dx = 1.0f / sizeX;
     const float dy = 1.0f / sizeY;
 
     float xC = 0, yC = 0, scale = 3.0;
 
-
     float r2Max[8] = {}; _mm256_set1_ps (r2Max, 100.0f);
     const int   nMax = 256;
 
-    txCreateWindow (sizeX, sizeY);
+    #ifndef BENCHMARK_MODE
+        DWORD lastTime = GetTickCount();
+        float fps = 0;
+
+        txCreateWindow (sizeX, sizeY);
+
+        RGBQUAD* graphBuf = txVideoMemory();
+    #endif
+
     Win32::_fpreset();
 
-    RGBQUAD* graphBuf = txVideoMemory();
+    for (SIMPLE_MODE( ; ; ) BENCHMARK(int curTest = 0; curTest < NUM_OF_TESTS; curTest++)) {
+        #ifndef BENCHMARK_MODE
+            if (GetAsyncKeyState (VK_ESCAPE)) break;
 
-    for ( ; ; ) {
-        if (GetAsyncKeyState (VK_ESCAPE)) break;
+            txBegin();
 
-        txBegin();
+            if (txGetAsyncKeyState (VK_RIGHT))    xC    += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_LEFT))     xC    -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_DOWN))     yC    += dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState (VK_UP))       yC    -= dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
 
-        if (txGetAsyncKeyState (VK_RIGHT))    xC    += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_LEFT))     xC    -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_DOWN))     yC    += dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState (VK_UP))       yC    -= dy * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-
-        if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-        if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
-
+            if (txGetAsyncKeyState ('W'))         scale -= dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+            if (txGetAsyncKeyState ('S'))         scale += dx * (txGetAsyncKeyState(VK_SHIFT) ? 100.0f : 1.0f);
+        #endif
 
         for (int y = 0; y < sizeY; y++) {
-            if (GetAsyncKeyState (VK_ESCAPE)) break;
 
             float y0 = (((float)y - 300.f) * dy + yC) *scale;
 
@@ -106,32 +121,38 @@ int main(void) {
                     _mm256_add_ps(yArr, xy, xy); _mm256_add_ps(yArr, yArr, y0Arr);
 
                     _mm256_add_epi32(N, N, cmp);
+
+                    BENCHMARK(__asm__ volatile("" : : "x"(N) : "memory");)
                 }
 
-                BYTE b[8] = {}; _mm256_slli_epi32(b, N, 4);
-                BYTE g[8] = {}; _mm256_slli_epi32(g, N, 1);
-                BYTE r[8] = {}; _mm256_slli_epi32(r, N, 2);
+                #ifndef BENCHMARK_MODE
+                    BYTE b[8] = {}; _mm256_slli_epi32(b, N, 4);
+                    BYTE g[8] = {}; _mm256_slli_epi32(g, N, 1);
+                    BYTE r[8] = {}; _mm256_slli_epi32(r, N, 2);
 
-                RGBQUAD color[8] = {}; for(int i = 0; i < 8; i++) color[i] = {b[i], g[i], r[i], 0};
+                    RGBQUAD color[8] = {}; for(int i = 0; i < 8; i++) color[i] = {b[i], g[i], r[i], 0};
 
-                int videoMemoryOffset = (sizeY - 1 - y) * sizeX + x;
-                for (int i = 0; i < 8; i++) graphBuf[videoMemoryOffset + i] = color[i];
+                    int videoMemoryOffset = (sizeY - 1 - y) * sizeX + x;
+                    for (int i = 0; i < 8; i++) graphBuf[videoMemoryOffset + i] = color[i];
+                #endif
             }
         }
 
-        DWORD currentTime = GetTickCount();
-        float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
-        if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
-        lastTime = currentTime;
+        #ifndef BENCHMARK_MODE
+            DWORD currentTime = GetTickCount();
+            float dt = ((float)currentTime - (float)lastTime) / 1000.0f;
+            if (dt > 0) fps = 0.9f * fps + 0.1f * (1.0f / dt);
+            lastTime = currentTime;
 
-        char fpsBuf[20];
-        sprintf(fpsBuf, "FPS: %.1f", fps);
+            char fpsBuf[20];
+            sprintf(fpsBuf, "FPS: %.1f", fps);
 
-        txSetColor(TX_WHITE);
-        txSetFillColor(TX_BLACK);
-        txSelectFont("Consolas", 24);
-        txTextOut(10, 10, fpsBuf);
-        txEnd();
+            txSetColor(TX_WHITE);
+            txSetFillColor(TX_BLACK);
+            txSelectFont("Consolas", 24);
+            txTextOut(10, 10, fpsBuf);
+            txEnd();
+        #endif
     }
 
     return 0;
